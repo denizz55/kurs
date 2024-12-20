@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Concert Tickets</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header style="background-color: #FF5A5A; color: white; padding: 10px 0; text-align: center;">
+        <h1><a href="/" style="color: white; text-decoration: none;">LIVE TICKET</a></h1>
+        <nav>
+            <a href="/" style="margin: 0 15px; color: white; text-decoration: none;">Главная</a>
+            <a href="#" style="margin: 0 15px; color: white; text-decoration: none;">О нас</a>
+            <a href="#" style="margin: 0 15px; color: white; text-decoration: none;">Контакты</a>
+        </nav>
+    </header>
+    <main style="padding: 20px;">
+        {% block content %}{% endblock %}
+    </main>
+    <footer style="background-color: #FF5A5A; color: white; text-align: center; padding: 10px 0; margin-top: 20px;">
+        <p>&copy; 2024 LIVE TICKETS. All rights reserved.</p>
+    </footer>
+</body>
+</html>

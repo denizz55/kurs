@@ -1,0 +1,23 @@
+{% extends 'concerts/base.html' %}
+
+{% block content %}
+<h2>{{ concert.name }}</h2>
+<p>{{ concert.description }}</p>
+<img src="{{ concert.image.url }}" alt="{{ concert.name }}" style="width: 100%; max-width: 600px; display: block; margin: 20px auto;">
+<h3>Карта мест</h3>
+<img src="{{ concert.hall_map.url }}" alt="Hall Map" style="width: 100%; max-width: 600px; display: block; margin: 20px auto;">
+<h3>Места</h3>
+<div class="grid">
+    {% for seat in seats %}
+    <div class="seat {% if seat.is_booked %}red{% else %}green{% endif %}">
+        <form method="post" action="{% url 'book_seat' seat.id %}">
+            {% csrf_token %}
+            {{ seat.row }}{{ seat.seat_number }}
+            {% if not seat.is_booked %}
+                <button type="submit">Забронировать</button>
+            {% endif %}
+        </form>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
