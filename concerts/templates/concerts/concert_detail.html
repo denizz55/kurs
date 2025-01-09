@@ -3,21 +3,38 @@
 {% block content %}
 <h2>{{ concert.name }}</h2>
 <p>{{ concert.description }}</p>
+
 <img src="{{ concert.image.url }}" alt="{{ concert.name }}" style="width: 100%; max-width: 600px; display: block; margin: 20px auto;">
-<h3>Карта мест</h3>
+
+<h3>Hall Map</h3>
 <img src="{{ concert.hall_map.url }}" alt="Hall Map" style="width: 100%; max-width: 600px; display: block; margin: 20px auto;">
-<h3>Места</h3>
-<div class="grid">
+
+<h3>Seats</h3>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; text-align: center;">
     {% for seat in seats %}
-    <div class="seat {% if seat.is_booked %}red{% else %}green{% endif %}">
-        <form method="post" action="{% url 'book_seat' seat.id %}">
-            {% csrf_token %}
-            {{ seat.row }}{{ seat.seat_number }}
-            {% if not seat.is_booked %}
-                <button type="submit">Забронировать</button>
+    <div class="seat {% if seat.is_booked %}red{% else %}green{% endif %}" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+        {% if seat.is_booked %}
+            {% if seat.booking.user == request.user %}
+                <p>Row: {{ seat.row }}, Seat: {{ seat.seat_number }} (Your Booking)</p>
+                <form method="post" action="{% url 'cancel_booking' seat.booking.id %}">
+                    {% csrf_token %}
+                    <input type="submit" value="Cancel Booking" style="background-color: red; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
+                </form>
+            {% else %}
+                <p>Row: {{ seat.row }}, Seat: {{ seat.seat_number }} (Booked)</p>
             {% endif %}
-        </form>
+        {% else %}
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'book_seat' seat.id %}">
+                    {% csrf_token %}
+                    <input type="submit" value="Book Row: {{ seat.row }}, Seat: {{ seat.seat_number }}" style="background-color: green; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
+                </form>
+            {% else %}
+                <p>Row: {{ seat.row }}, Seat: {{ seat.seat_number }} (Login to Book)</p>
+            {% endif %}
+        {% endif %}
     </div>
     {% endfor %}
 </div>
+
 {% endblock %}

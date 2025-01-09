@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+LOGOUT_REDIRECT_URL = '/'
 
 # Application definition
 
@@ -127,3 +128,6 @@ import os
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+LOGIN_REDIRECT_URL = '/'

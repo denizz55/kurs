@@ -3,22 +3,39 @@
 <head>
     <title>Concert Tickets</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <header style="background-color: #FF5A5A; color: white; padding: 10px 0; text-align: center;">
-        <h1><a href="/" style="color: white; text-decoration: none;">LIVE TICKET</a></h1>
+    <header style="background-color: #333; color: white; padding: 10px 0; text-align: center;">
+        <h1><a href="/" style="color: white; text-decoration: none;">LIVE TICKETS</a></h1>
         <nav>
-            <a href="/" style="margin: 0 15px; color: white; text-decoration: none;">Главная</a>
-            <a href="#" style="margin: 0 15px; color: white; text-decoration: none;">О нас</a>
-            <a href="#" style="margin: 0 15px; color: white; text-decoration: none;">Контакты</a>
+            <a href="/" style="margin: 0 15px; color: white; text-decoration: none;">Home</a>
+            {% if user.is_authenticated %}
+                <a href="#" style="margin: 0 15px; color: white;">Welcome, {{ user.username }}</a>
+                <a href="{% url 'logout' %}" style="margin: 0 15px; color: white; text-decoration: none;">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}" style="margin: 0 15px; color: white; text-decoration: none;">Login</a>
+                <a href="{% url 'register' %}" style="margin: 0 15px; color: white; text-decoration: none;">Register</a>
+            {% endif %}
         </nav>
     </header>
+    
+    {% if messages %}
+    <div style="margin: 20px 0;">
+        {% for message in messages %}
+        <div style="padding: 10px; border: 1px solid {% if message.tags == 'error' %}red{% else %}green{% endif %}; background-color: {% if message.tags == 'error' %}#ffcccc{% else %}#ccffcc{% endif %};">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
     <main style="padding: 20px;">
         {% block content %}{% endblock %}
     </main>
-    <footer style="background-color: #FF5A5A; color: white; text-align: center; padding: 10px 0; margin-top: 20px;">
-        <p>&copy; 2024 LIVE TICKETS. All rights reserved.</p>
+    <footer>
+        <div class="footer">
+            <p>&copy; 2024 LIVE TICKETS. All rights reserved.</p>
+        </div>
     </footer>
 </body>
 </html>
