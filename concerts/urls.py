@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from .views import logout_view
+from .views import profile_view, cancel_booking
 
 urlpatterns = [
     path('', views.concert_list, name='concert_list'),
@@ -13,4 +14,6 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='concerts/login.html'), name='login'),
     path('register/', views.register, name='register'),
     path('logout/', logout_view, name='logout'),
+    path('profile/', profile_view, name='profile'),
+    path('cancel-booking/<int:booking_id>/', cancel_booking, name='cancel_booking'),
 ]

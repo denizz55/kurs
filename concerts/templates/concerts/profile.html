@@ -1,0 +1,25 @@
+{% extends 'concerts/base.html' %}
+
+{% block content %}
+<h1>Личный кабинет</h1>
+
+<h2>Ваши забронированные билеты:</h2>
+{% if bookings %}
+    <ul>
+        {% for booking in bookings %}
+            <li>
+                <h3>{{ booking.seat.concert.title }}</h3>
+                <p><strong>Дата бронирования:</strong> {{ booking.booking_date }}</p>
+                <p><strong>Место:</strong> Ряд {{ booking.seat.row }}, Место {{ booking.seat.number }}</p>
+                <img src="{{ booking.seat.concert.image.url }}" alt="{{ booking.seat.concert.title }}" style="width: 200px; height: auto;">
+                <form method="post" action="{% url 'cancel_booking' booking.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Отменить бронь</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Вы пока не забронировали ни одного билета.</p>
+{% endif %}
+{% endblock %}

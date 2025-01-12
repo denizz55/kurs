@@ -16,29 +16,19 @@ def concert_list(request):
     return render(request, 'concerts/concert_list.html', {'concerts': concerts})
 
 def concert_detail(request, id):
-    """Детали концерта и обработка бронирования."""
     concert = get_object_or_404(Concert, id=id)
-    seats = concert.seats.order_by('row', 'seat_number')
 
-    if request.method == "POST":
-        seat_id = request.POST.get('seat_id')
-        user_name = request.user.username  # Берем имя пользователя из аккаунта
-        user_email = request.user.email   # Берем email пользователя из аккаунта
+    # Формирование схемы зала
+    rows = Seat.objects.filter(concert=concert).values_list('row', flat=True).distinct()
+    seating_chart = {
+        row: Seat.objects.filter(concert=concert, row=row).order_by('seat_number')
+        for row in rows
+    }
 
-        seat = get_object_or_404(Seat, id=seat_id)
-
-        if seat.is_booked:
-            messages.error(request, f'Seat {seat.row}-{seat.seat_number} is already booked!')
-            return HttpResponseRedirect(reverse('concert_detail', args=[id]))
-
-        Booking.objects.create(seat=seat, user_name=user_name, user_email=user_email)
-        seat.is_booked = True
-        seat.save()
-
-        messages.success(request, f'Seat {seat.row}-{seat.seat_number} successfully booked!')
-        return HttpResponseRedirect(reverse('concert_detail', args=[id]))
-
-    return render(request, 'concerts/concert_detail.html', {'concert': concert, 'seats': seats})
+    return render(request, 'concerts/concert_detail.html', {
+        'concert': concert,
+        'seating_chart': seating_chart,
+    })
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
@@ -89,6 +79,14 @@ def cancel_booking(request, booking_id):
     messages.success(request, f'Your booking for seat {seat.row}-{seat.seat_number} has been cancelled.')
     return HttpResponseRedirect(reverse('concert_detail', args=[seat.concert.id]))
 
+
+@login_required
+def cancel_booking(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    booking.delete()
+    messages.success(request, 'Бронь успешно отменена!')
+    return redirect('profile')
+
 def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
@@ -105,3 +103,8 @@ def register(request):
 def logout_view(request):
     logout(request)
     return redirect('concert_list')  # Перенаправление на главную страницу
+
+def profile_view(request):
+    # Получить все бронирования для текущего пользователя
+    bookings = Booking.objects.filter(user=request.user).select_related('seat__concert')
+    return render(request, 'concerts/profile.html', {'bookings': bookings})

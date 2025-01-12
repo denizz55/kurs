@@ -1,38 +1,37 @@
+<link rel="stylesheet" href="../css/style.css">
 {% extends 'concerts/base.html' %}
 
 {% block content %}
-<h2>{{ concert.name }}</h2>
-<p>{{ concert.description }}</p>
-
+<h2 class="name_concert">{{ concert.name }}</h2>
+<p class="description">{{ concert.description }}</p>
 <img src="{{ concert.image.url }}" alt="{{ concert.name }}" style="width: 100%; max-width: 600px; display: block; margin: 20px auto;">
+<h3>Выберите место</h3>
 
-<h3>Hall Map</h3>
-<img src="{{ concert.hall_map.url }}" alt="Hall Map" style="width: 100%; max-width: 600px; display: block; margin: 20px auto;">
+<div style="text-align: center; margin: 20px 0;">
+    <h4>СЦЕНА</h4>
+</div>
 
-<h3>Seats</h3>
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; text-align: center;">
-    {% for seat in seats %}
-    <div class="seat {% if seat.is_booked %}red{% else %}green{% endif %}" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
-        {% if seat.is_booked %}
-            {% if seat.booking.user == request.user %}
-                <p>Row: {{ seat.row }}, Seat: {{ seat.seat_number }} (Your Booking)</p>
-                <form method="post" action="{% url 'cancel_booking' seat.booking.id %}">
-                    {% csrf_token %}
-                    <input type="submit" value="Cancel Booking" style="background-color: red; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
-                </form>
-            {% else %}
-                <p>Row: {{ seat.row }}, Seat: {{ seat.seat_number }} (Booked)</p>
-            {% endif %}
-        {% else %}
-            {% if user.is_authenticated %}
-                <form method="post" action="{% url 'book_seat' seat.id %}">
-                    {% csrf_token %}
-                    <input type="submit" value="Book Row: {{ seat.row }}, Seat: {{ seat.seat_number }}" style="background-color: green; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
-                </form>
-            {% else %}
-                <p>Row: {{ seat.row }}, Seat: {{ seat.seat_number }} (Login to Book)</p>
-            {% endif %}
-        {% endif %}
+<div style="display: grid; justify-content: center; gap: 10px;">
+    {% for row, seats in seating_chart.items %}
+    <div style="display: flex; justify-content: center;">
+        <span style="margin-right: 10px; font-weight: bold;">Row {{ row }}</span>
+        {% for seat in seats %}
+        <form method="post" action="{% url 'book_seat' seat.id %}" style="margin: 0 5px;">
+            {% csrf_token %}
+            <button type="submit"
+                {% if seat.is_booked %}
+                disabled
+                style="width: 40px; height: 40px; background-color: red; color: white; border: none; cursor: not-allowed;"
+                {% elif seat.user == request.user %}
+                style="width: 40px; height: 40px; background-color: blue; color: white; border: none; cursor: pointer;"
+                {% else %}
+                style="width: 40px; height: 40px; background-color: green; color: white; border: none; cursor: pointer;"
+                {% endif %}
+            >
+                {{ seat.seat_number }}
+            </button>
+        </form>
+        {% endfor %}
     </div>
     {% endfor %}
 </div>
