@@ -11,9 +11,25 @@ from .forms import UserRegistrationForm
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.db import IntegrityError
+from .forms import ConcertFilterForm
+
 def concert_list(request):
     concerts = Concert.objects.order_by('date')
-    return render(request, 'concerts/concert_list.html', {'concerts': concerts})
+    form = ConcertFilterForm(request.GET or None)
+
+    if form.is_valid():
+        # Фильтрация по дате
+        if form.cleaned_data.get('date'):
+            concerts = concerts.filter(date__date=form.cleaned_data['date'])
+        # Фильтрация по месяцу
+        elif form.cleaned_data.get('month'):
+            month = form.cleaned_data['month']
+            concerts = concerts.filter(
+                date__year=month.year,
+                date__month=month.month
+            )
+
+    return render(request, 'concerts/concert_list.html', {'concerts': concerts, 'form': form})
 
 def concert_detail(request, id):
     concert = get_object_or_404(Concert, id=id)
@@ -80,12 +96,30 @@ def cancel_booking(request, booking_id):
     return HttpResponseRedirect(reverse('concert_detail', args=[seat.concert.id]))
 
 
-@login_required
 def cancel_booking(request, booking_id):
+    # Получаем бронирование или возвращаем 404
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+
+    # Освобождаем место
+    seat = booking.seat
+    seat.is_booked = False
+    seat.save()
+
+    # Удаляем бронирование
     booking.delete()
-    messages.success(request, 'Бронь успешно отменена!')
-    return redirect('profile')
+
+    # Сообщение об успешной отмене бронирования
+    messages.success(request, "Бронирование успешно отменено.")
+    return redirect('profile')  # Перенаправление в личный кабинет
+
+@login_required
+def profile(request):
+    # Получаем бронирования текущего пользователя
+    bookings = Booking.objects.filter(user=request.user)
+
+    return render(request, 'profile.html', {
+        'bookings': bookings,
+    })
 
 def register(request):
     if request.method == 'POST':
@@ -94,7 +128,7 @@ def register(request):
             user = form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}!')
-            login(request, user)  # Автоматически логинить после регистрации
+            login(request, user) 
             return redirect('concert_list')
     else:
         form = UserRegistrationForm()

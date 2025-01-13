@@ -1,17 +1,17 @@
 {% extends 'concerts/base.html' %}
 
 {% block content %}
-<h2>Login</h2>
+<h2>Авторизация</h2>
 <form method="post">
     {% csrf_token %}
     <div>
-        <label for="username">Username:</label>
+        <label for="username">Ваше имя:</label>
         <input type="text" id="username" name="username" required>
     </div>
     <div>
-        <label for="password">Password:</label>
+        <label for="password">Пароль:</label>
         <input type="password" id="password" name="password" required>
     </div>
-    <button type="submit">Login</button>
+    <button type="submit">Войти</button>
 </form>
 {% endblock %}

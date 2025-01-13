@@ -1,10 +1,49 @@
 {% extends 'concerts/base.html' %}
 
 {% block content %}
-<h2>Register</h2>
+<h2>Регистрация</h2>
 <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
+    <input type="hidden" name="csrfmiddlewaretoken" value="GtKt01j0NszYmveTAK9WZ7aDJ59dhwkaUW8LIEJZTOTxAIJRZ2CJB4GSCtKuyHCV">
+    <p>
+    <label for="id_username">Username:</label>
+    <input type="text" name="username" maxlength="150" autofocus required aria-describedby="id_username_helptext" id="id_username">
+    
+      <span class="helptext" id="id_username_helptext"></span>
+    
+    
+  </p>
+
+  
+  <p>
+    <label for="id_email">Email:</label>
+    <input type="email" name="email" maxlength="320" required id="id_email">
+    
+    
+  </p>
+
+  
+  <p>
+    <label for="id_password1">Password:</label>
+    <input type="password" name="password1" autocomplete="new-password" aria-describedby="id_password1_helptext" id="id_password1">
+    
+      <span class="helptext" id="id_password1_helptext"></span>
+    
+    
+  </p>
+
+  
+  <p>
+    <label for="id_password2">Password confirmation:</label>
+    <input type="password" name="password2" autocomplete="new-password" aria-describedby="id_password2_helptext" id="id_password2">
+    
+      <span class="helptext" id="id_password2_helptext"></span>
+    
+    
+      
+    
+  </p>
     <button type="submit" class="btn btn-primary">Register</button>
 </form>
+
+    </main>
 {% endblock %}

@@ -12,7 +12,6 @@ class Concert(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2, default=20.00)
 
     def delete(self, *args, **kwargs):
-        # Удаление всех связанных бронирований (если это нужно)
         Booking.objects.filter(seat__concert=self).delete()
         super().delete(*args, **kwargs)
 
@@ -30,10 +29,9 @@ class Seat(models.Model):
         unique_together = ('concert', 'row', 'seat_number')
 
     def __str__(self):
-        return f"Row {self.row} Seat {self.seat_number}"
+        return f"Ряд {self.row}, Место {self.number} ({'Занято' if self.is_booked else 'Свободно'})"
 
 
-# Сигнал для автоматического создания схемы зала
 @receiver(post_save, sender=Concert)
 def create_seating_chart(sender, instance, created, **kwargs):
     if created:

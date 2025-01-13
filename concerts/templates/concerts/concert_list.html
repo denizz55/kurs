@@ -1,16 +1,27 @@
 {% extends 'concerts/base.html' %}
-
+{% load static %}
 {% block content %}
-<h2 style="text-align: center;">Upcoming Concerts</h2>
-<div style="display: flex; flex-wrap: wrap; justify-content: space-around; gap: 20px;">
+<h2 style="text-align: center;">Поиск концертов</h2>
+
+<form method="get" action="{% url 'concert_list' %}">
+    {{ form.as_p }}
+    <button type="submit">Найти</button>
+</form>
+
+<h2 style="text-align: center;">Список концертов</h2>
+<div class="concert-list">
     {% for concert in concerts %}
-    <div style="border: 1px solid #ccc; border-radius: 10px; width: 300px; text-align: center; padding: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-        <img src="{{ concert.image.url }}" alt="{{ concert.name }}" style="width: 100%; border-radius: 10px;">
+    <div class="concert-card">
+        <img src="{{ concert.image.url }}" alt="{{ concert.name }}">
         <h3>{{ concert.name }}</h3>
-        <p><strong>Date:</strong> {{ concert.date }}</p>
-        <p><strong>Price:</strong> ${{ concert.price }}</p>
-        <a href="{{ concert.id }}/" style="display: inline-block; margin-top: 10px; padding: 10px 15px; background-color: #007BFF; color: white; text-decoration: none; border-radius: 5px;">View Details</a>
+        <p><strong>Дата:</strong> {{ concert.date }}</p>
+        <p><strong>Цена:</strong> ${{ concert.price }}</p>
+        <a href="{{ concert.id }}/">Подробнее</a>
     </div>
     {% endfor %}
 </div>
+
+{% if concerts|length == 0 %}
+<p class="no-concerts">Концертов не найдено.</p>
+{% endif %}
 {% endblock %}
