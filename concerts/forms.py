@@ -15,8 +15,3 @@ class ConcertFilterForm(forms.Form):
         widget=forms.DateInput(attrs={'type': 'date'}),
         label="Дата концерта"
     )
-    month = forms.DateField(
-        required=False,
-        widget=forms.DateInput(attrs={'type': 'month'}),
-        label="Месяц концерта"
-    )
